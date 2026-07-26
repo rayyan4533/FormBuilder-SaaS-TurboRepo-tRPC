@@ -1,4 +1,9 @@
 import { z } from "zod";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config();
 
 const envSchema = z.object({
   DATABASE_URL: z.string().describe("DB URL"),
@@ -11,3 +16,4 @@ function createEnv(env: NodeJS.ProcessEnv) {
 }
 
 export const env = createEnv(process.env);
+
