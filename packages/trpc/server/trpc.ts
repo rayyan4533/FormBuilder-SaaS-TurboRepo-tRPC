@@ -3,7 +3,7 @@ import { OpenApiMeta } from "trpc-to-openapi";
 
 import { createContext } from "./context";
 import { getAuthenticationCookie } from "./utils/cookie";
-import UserService from "@repo/services/user";
+import { userService } from "./services";
 
 export const tRPCContext = initTRPC
   .meta<OpenApiMeta>()
@@ -19,7 +19,7 @@ export const authenticatedProcedure = tRPCContext.procedure.use(async options =>
   const userToken = getAuthenticationCookie(ctx)
   if (!userToken) throw new Error(`user is not logged in`)
 
-  const { id, } = await UserService.verifyAndDecodeUserToken(userToken)
+  const { id, } = await userService.verifyAndDecodeUserToken(userToken)
 
   return options.next({
     ctx: {

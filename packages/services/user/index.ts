@@ -6,17 +6,17 @@ import { env } from '../env'
 
 class UserService {
 
-  private async getUserByEmail(email: string) {
+  public async getUserByEmail(email: string) {
     const result = await db.select().from(usersTable).where(eq(usersTable.email, email))
     if (!result || result.length === 0) return null
     return result[0]//cause array return hoga
   }
 
-  private async generateHash(salt: string, password: string) {
+  public async generateHash(salt: string, password: string) {
     return createHmac('sha256', salt).update(password).digest('hex')
   }
 
-  private async generateUserToken(payload: GenerateUserTokenPayloadType) {
+  public async generateUserToken(payload: GenerateUserTokenPayloadType) {
     const { id } = await generateUserTokenPayload.parseAsync(payload)
     const token = JWT.sign({ id }, env.JWT_SECRET)
     return { token }
@@ -24,7 +24,7 @@ class UserService {
   }
 
 
-  private async signUpUser(payload: userSignUpInputType) {
+  public async signUpUser(payload: userSignUpInputType) {
     const { fullName, email, password } = await userSignUpInput.parseAsync(payload)
     if (this.getUserByEmail != null) throw new Error(`user with email ${email} already exists`)
 
@@ -69,6 +69,23 @@ class UserService {
     }
 
   }
+
+
+  //#region of verification
+  public async verifyAndDecodeUserToken(token: string) {
+    const { id } = await this.verifyUserToken(token)
+    return { id }
+  }
+  public async verifyUserToken(token: string): Promise<GenerateUserTokenPayloadType> {
+    try {
+      const verificationResult = JWT.verify(token, env.JWT_SECRET) as GenerateUserTokenPayloadType
+      return verificationResult
+    } catch (error) {
+      throw new Error(`Invalid Token`)
+    }
+  }
+
+  //#endregion of verification
 
 
 }

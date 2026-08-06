@@ -1,19 +1,64 @@
-import { z, zodUndefinedModel } from "../../schema";
-import { userService } from "../../services";
-import { getAuthenticationMethodOutputSchema } from "@repo/services/user/model";
-import { publicProcedure, router } from "../../trpc";
+import { authenticatedProcedure, publicProcedure, router } from "../../trpc";
 import { generatePath } from "../../utils/path-generator";
+import { signInUserWithEmailAndPasswordInputModel, signInUserWithEmailAndPasswordOutputModel, signUpUserInputModel, signUpUserOutputModel } from "./model";
+import { input } from "@tensorflow/tfjs";
+import { userService } from "../../services";
+import { setAuthenticationCookie } from "../../utils/cookie";
+import { signInUserWithEmailAndPasswordInput } from "@repo/services/user/model";
 
-const TAGS = ["Authentication"];
-const getPath = generatePath("/authentication");
+
+
+
+const TAGS = ["/authentication"]
+const getPath = generatePath("/authentication")
 
 export const authRouter = router({
-  getSupportedAuthenticationProviders: publicProcedure
-    .meta({ openapi: { method: "GET", path: getPath("/supported-providers"), tags: TAGS } })
-    .input(zodUndefinedModel)
-    .output(z.readonly(z.array(getAuthenticationMethodOutputSchema)))
-    .query(async () => {
-      const supportedMethods = await userService.getAuthenticationMethods();
-      return supportedMethods;
-    }),
-});
+    signUpUser: publicProcedure
+        .meta({
+            openapi: {
+                method: 'POST',
+                path: getPath('signUpUser'),
+                tags: TAGS
+            }
+        })
+        .input(signUpUserInputModel)
+        .output(signUpUserOutputModel)
+        .mutation(async ({ input, ctx }) => {
+
+            const { fullName, email, password } = input
+
+            const { id, token } = await userService.signUpUser({
+                fullName, email, password
+            })
+
+            setAuthenticationCookie(ctx, token)
+
+            return {
+                id
+            }
+
+        }),
+
+    signInUserWithEmailAndPassword: publicProcedure.meta({
+        openapi: {
+            method: "POST",
+            path: getPath('/SignInUserWithEmailAndPassword'),
+            tags: TAGS
+        }
+    })
+        .input(signInUserWithEmailAndPasswordInputModel)
+        .output(signInUserWithEmailAndPasswordOutputModel)
+        .mutation(async ({ input, ctx }) => {
+            const { email, password } = input
+
+            const { id, token } = await userService.signInUserWithEmailAndPassword({
+                email, password
+            })
+            setAuthenticationCookie(ctx, token)
+
+            return {
+                id
+            }
+        }),
+
+})
