@@ -7,8 +7,10 @@ interface CreateTRPCHttpBatchClientClientOpts {
 
 
 export const createTRPCHttpBatchClientClient = () => {
+  const baseUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8000/trpc";
+  const url = baseUrl.endsWith("/trpc") ? baseUrl : `${baseUrl}/trpc`;
   return httpLink({
-    url: env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/trpc",
+    url,
     fetch(url, options) {
       return fetch(url, {
         ...options,
@@ -17,4 +19,5 @@ export const createTRPCHttpBatchClientClient = () => {
     },
   });
 };
+
 
