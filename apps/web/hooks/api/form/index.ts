@@ -3,160 +3,126 @@ import { trpc } from "~/trpc/client";
 export const useCreateForm = () => {
   const utils = trpc.useUtils();
 
-  const {
-    mutateAsync: createFormAsync,
-    mutate: createForm,
-    isError,
-    error,
-    isPending,
-    status,
-  } = (trpc as any).form?.createForm?.useMutation
-    ? (trpc as any).form.createForm.useMutation({
-        onSuccess: async () => {
-          await (utils as any).form?.listForms?.invalidate();
-        },
-      })
-    : {
-        mutateAsync: async (_data: { title: string; description?: string }) => {},
-        mutate: () => {},
-        isError: false,
-        error: null,
-        isPending: false,
-        status: "idle",
-      };
+  const mutation = trpc.form.createForm.useMutation({
+    onSuccess: async () => {
+      await utils.form.listForms.invalidate();
+    },
+  });
 
   return {
-    createFormAsync,
-    createForm,
-    isError,
-    error,
-    isPending,
-    status,
+    createFormAsync: mutation.mutateAsync,
+    createForm: mutation.mutate,
+    isError: mutation.isError,
+    error: mutation.error,
+    isPending: mutation.isPending,
+    status: mutation.status,
   };
 };
 
 export const useListForms = () => {
-  const query = (trpc as any).form?.listForms?.useQuery
-    ? (trpc as any).form.listForms.useQuery()
-    : { data: [], isLoading: false, error: null };
+  const query = trpc.form.listForms.useQuery();
 
   return {
     forms: query.data ?? [],
-    isLoading: query.isLoading ?? false,
-    error: query.error ?? null,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const useGetForm = (formId: string) => {
+  const query = trpc.form.getForm.useQuery(
+    { formId },
+    { enabled: Boolean(formId) }
+  );
+
+  return {
+    form: query.data,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
   };
 };
 
 export const useGetFields = (formId: string) => {
-  const query = (trpc as any).form?.getFields?.useQuery
-    ? (trpc as any).form.getFields.useQuery({ formId }, { enabled: !!formId })
-    : { data: [], isLoading: false, error: null };
+  const query = trpc.form.getFields.useQuery(
+    { formId },
+    { enabled: Boolean(formId) }
+  );
 
   return {
     fields: query.data ?? [],
-    isLoading: query.isLoading ?? false,
-    error: query.error ?? null,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
   };
 };
 
 export const useCreateField = () => {
   const utils = trpc.useUtils();
 
-  const {
-    mutateAsync: createFieldAsync,
-    mutate: createField,
-    isPending,
-    isError,
-    error,
-  } = (trpc as any).form?.createField?.useMutation
-    ? (trpc as any).form.createField.useMutation({
-        onSuccess: async () => {
-          await (utils as any).form?.getFields?.invalidate();
-        },
-      })
-    : {
-        mutateAsync: async (_data: any) => {},
-        mutate: () => {},
-        isPending: false,
-        isError: false,
-        error: null,
-      };
+  const mutation = trpc.form.createField.useMutation({
+    onSuccess: async () => {
+      await utils.form.getFields.invalidate();
+      await utils.form.getForm.invalidate();
+    },
+  });
 
   return {
-    createFieldAsync,
-    createField,
-    isPending,
-    isError,
-    error,
+    createFieldAsync: mutation.mutateAsync,
+    createField: mutation.mutate,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
   };
 };
 
 export const useUpdateField = () => {
   const utils = trpc.useUtils();
 
-  const {
-    mutateAsync: updateFieldAsync,
-    mutate: updateField,
-    isPending,
-    isError,
-    error,
-  } = (trpc as any).form?.updateField?.useMutation
-    ? (trpc as any).form.updateField.useMutation({
-        onSuccess: async () => {
-          await (utils as any).form?.getFields?.invalidate();
-        },
-      })
-    : {
-        mutateAsync: async (_data: any) => {},
-        mutate: () => {},
-        isPending: false,
-        isError: false,
-        error: null,
-      };
+  const mutation = trpc.form.updateField.useMutation({
+    onSuccess: async () => {
+      await utils.form.getFields.invalidate();
+      await utils.form.getForm.invalidate();
+    },
+  });
 
   return {
-    updateFieldAsync,
-    updateField,
-    isPending,
-    isError,
-    error,
+    updateFieldAsync: mutation.mutateAsync,
+    updateField: mutation.mutate,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
   };
 };
 
 export const useDeleteField = () => {
   const utils = trpc.useUtils();
 
-  const {
-    mutateAsync: deleteFieldAsync,
-    mutate: deleteField,
-    isPending,
-  } = (trpc as any).form?.deleteField?.useMutation
-    ? (trpc as any).form.deleteField.useMutation({
-        onSuccess: async () => {
-          await (utils as any).form?.getFields?.invalidate();
-        },
-      })
-    : {
-        mutateAsync: async (_data: { id: string }) => {},
-        mutate: () => {},
-        isPending: false,
-      };
+  const mutation = trpc.form.deleteField.useMutation({
+    onSuccess: async () => {
+      await utils.form.getFields.invalidate();
+      await utils.form.getForm.invalidate();
+    },
+  });
 
   return {
-    deleteFieldAsync,
-    deleteField,
-    isPending,
+    deleteFieldAsync: mutation.mutateAsync,
+    deleteField: mutation.mutate,
+    isPending: mutation.isPending,
   };
 };
 
 export const useGetFormSubmissions = (formId: string) => {
-  const query = (trpc as any).form?.getSubmissions?.useQuery
-    ? (trpc as any).form.getSubmissions.useQuery({ formId }, { enabled: !!formId })
-    : { data: [], isLoading: false, error: null };
+  const query = trpc.form.getFormSubmissions.useQuery(
+    { formId },
+    { enabled: Boolean(formId) }
+  );
 
   return {
     submissions: query.data ?? [],
-    isLoading: query.isLoading ?? false,
-    error: query.error ?? null,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
   };
 };
