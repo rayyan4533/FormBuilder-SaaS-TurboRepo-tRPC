@@ -1,14 +1,14 @@
 "use client";
 
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useState } from "react";
+import { Form, SubmitHandler, useForm, } from "react-hook-form";
+import { useSignup } from "~/hooks/api/auth";
+
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
 import { cn } from "~/lib/utils";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "~/components/ui/field";
-import { Input } from "~/components/ui/input";
-import { useSignup } from "~/hooks/api/auth";
+
 
 type SignupFormValues = {
     fullName: string;
@@ -16,82 +16,144 @@ type SignupFormValues = {
     password: string;
 };
 
-export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
-    const { createUserWithEmailAndPasswordAsync } = useSignup();
+export function SignUpForm() {
     const router = useRouter();
-    const { register, handleSubmit } = useForm<SignupFormValues>({
+    const { createUserWithEmailAndPasswordAsync, isError, error } = useSignup();
+    const [submitting, setSubmitting] = useState(false)
+    const [formError, setFormError] = useState<string | null>(null)
+
+
+    //#region open REACT-HOOK-FORM
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<SignupFormValues>({
         defaultValues: {
             fullName: "",
             email: "",
             password: "",
         },
     });
+    //#endregion
 
+    //ONSUBMIT HANDLER REACT-HOOK FORM CUSTOM
     const onSubmit: SubmitHandler<SignupFormValues> = async (values) => {
-        console.log(values);
-        const { id } = await createUserWithEmailAndPasswordAsync({
-            fullName: values.fullName,
-            email: values.email,
-            password: values.password,
-        });
-        router.replace("/dashboard");
-    };
+        setFormError(null)
+        setSubmitting(true)
+
+        try {
+            await createUserWithEmailAndPasswordAsync({
+                fullName: values.fullName,
+                email: values.email,
+                password: values.password
+            });
+            router.replace("/dashboard");
+        } catch (error: any) {
+            setFormError(error?.message || "Failed to create account. Please try again.");
+        }
+        finally {
+            setSubmitting(false);
+        }
+    }
 
     return (
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Create an account</CardTitle>
-                    <CardDescription>Enter your details below to create your account</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <FieldGroup>
-                            <Field>
-                                <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
-                                <Input
-                                    id="fullName"
-                                    type="text"
-                                    placeholder="John Doe"
-                                    required
-                                    {...register("fullName", { required: true })}
-                                />
-                            </Field>
-                            <Field>
-                                <FieldLabel htmlFor="email">Email</FieldLabel>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="m@example.com"
-                                    required
-                                    {...register("email", { required: true })}
-                                />
-                            </Field>
-                            <Field>
-                                <FieldLabel htmlFor="password">Password</FieldLabel>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    {...register("password", { required: true })}
-                                />
-                            </Field>
-                            <Field>
-                                <Button type="submit">Sign Up</Button>
-                                <Button variant="outline" type="button">
-                                    Sign up with Google
-                                </Button>
-                                <FieldDescription className="text-center">
-                                    Already have an account?{" "}
-                                    <Link href="/login" className="underline underline-offset-4">
-                                        Login
-                                    </Link>
-                                </FieldDescription>
-                            </Field>
-                        </FieldGroup>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
-    );
+        <section className="flex flex-col justify-center items-center mx-auto" >
+            {/* heading */}
+            < div >
+                <h1>welcom to Formura</h1>
+            </div >
+            {/* Global Error Banner */}
+            {(formError) && (
+                <div className="bg-destructive/10 mb-4 p-2.5 rounded text-destructive text-xs">
+                    {formError || "An error occurred."}
+                </div>
+            )}
+
+            {/* 2 container of form and image */}
+            < main className="flex justify-center items-center mx-auto" >
+                {/* Form side */}
+
+                <form onSubmit={handleSubmit(onSubmit)}>
+
+                    <div className="space-y-1">
+                        <label htmlFor="fullName" className="block font-medium text-xs">
+                            Full Name
+                        </label>
+                        <input
+                            id="fullName"
+                            type="text"
+                            placeholder="John Doe"
+                            {...register("fullName", { required: "Full name is required" })}
+                            className="bg-background px-3 py-1.5 border rounded outline-none focus:ring-1 focus:ring-ring w-full text-sm"
+                        />
+                        {errors.fullName && (
+                            <p className="text-destructive text-xs">{errors.fullName.message}</p>
+                        )}
+                    </div>
+
+                    {/* Email Field */}
+                    <div className="space-y-1">
+                        <label htmlFor="email" className="block font-medium text-xs">
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="name@example.com"
+                            {...register("email", { required: "Email is required" })}
+                            className="bg-background px-3 py-1.5 border rounded outline-none focus:ring-1 focus:ring-ring w-full text-sm"
+                        />
+                        {errors.email && (
+                            <p className="text-destructive text-xs">{errors.email.message}</p>
+                        )}
+                    </div>
+
+                    {/* Password Field */}
+                    <div className="space-y-1">
+                        <label htmlFor="password" className="block font-medium text-xs">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="••••••••"
+                            {...register("password", { required: "Password is required" })}
+                            className="bg-background px-3 py-1.5 border rounded outline-none focus:ring-1 focus:ring-ring w-full text-sm"
+                        />
+                        {errors.password && (
+                            <p className="text-destructive text-xs">{errors.password.message}</p>
+                        )}
+                    </div>
+                    {/* signup btns */}
+                    <div className="space-y-3 pt-2">
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="flex justify-center items-center bg-primary hover:bg-primary/90 disabled:opacity-50 px-4 py-2 rounded w-full font-medium text-primary-foreground text-sm transition-colors"
+                        >
+                            {submitting ? "Creating account..." : "Sign Up"}
+                        </button>
+
+                        <p className="text-muted-foreground text-xs text-center">
+                            Already have an account?{" "}
+                            <Link href="/login" className="font-medium text-primary underline underline-offset-4">
+                                Login
+                            </Link>
+                        </p>
+                    </div>
+                </form>
+
+
+                {/* image*/}
+                <div>
+                </div >
+            </main >
+
+
+
+        </section >
+
+
+    )
 }

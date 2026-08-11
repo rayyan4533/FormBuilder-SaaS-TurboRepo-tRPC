@@ -6,37 +6,7 @@ import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Pencil, Loader2, FileText, AlertCircle } from "lucide-react";
-
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
-import { Skeleton } from "~/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
+import { Plus, Pencil, Loader2, FileText, AlertCircle, ArrowLeft, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCreateForm, useListForms } from "~/hooks/api/form";
 
@@ -79,200 +49,185 @@ export default function FormsDashboardPage() {
         router.push(`/dashboard/forms/${result.id}`);
       }
     } catch (err) {
-      // Error handles automatically via mutationError state
+      // Error handled via mutationError
     }
   };
 
-
   return (
-    <div className="container mx-auto max-w-6xl py-8 px-4 sm:px-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Forms</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Create, manage, and view responses for all your form builder forms.
-          </p>
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      {/* Simple Header */}
+      <header className="border-b border-border bg-card px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/dashboard"
+            className="p-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground"
+            title="Back to Dashboard"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <div>
+            <h1 className="text-xl font-bold">Forms</h1>
+            <p className="text-xs text-muted-foreground">Manage and build your forms</p>
+          </div>
         </div>
 
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create Form
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Create a New Form</DialogTitle>
-              <DialogDescription>
-                Provide a title and optional description for your new form.
-              </DialogDescription>
-            </DialogHeader>
+        <button
+          onClick={() => setOpen(true)}
+          className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Create Form
+        </button>
+      </header>
 
-            {isError && (
-              <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{mutationError?.message || "Failed to create form. Please try again."}</span>
+      {/* Main Content */}
+      <main className="flex-1 max-w-6xl w-full mx-auto p-6 space-y-6">
+        {/* Create Form Modal Dialog */}
+        {open && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-card text-card-foreground border border-border w-full max-w-md rounded-xl p-6 shadow-xl relative space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Create New Form</h2>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="p-1 rounded hover:bg-accent text-muted-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-            )}
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Title <span className="text-destructive">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="e.g. Customer Feedback Survey"
-                          maxLength={55}
-                          {...field}
-                        />
-                      </FormControl>
-                      <div className="flex justify-between items-center text-xs text-muted-foreground">
-                        <FormMessage />
-                        <span>{field.value?.length || 0}/55</span>
-                      </div>
-                    </FormItem>
+              {isError && (
+                <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{mutationError?.message || "Failed to create form."}</span>
+                </div>
+              )}
+
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Title <span className="text-destructive">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Customer Feedback Survey"
+                    maxLength={55}
+                    {...form.register("title")}
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  {form.formState.errors.title && (
+                    <p className="text-xs text-destructive mt-1">
+                      {form.formState.errors.title.message}
+                    </p>
                   )}
-                />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Brief description of the form's purpose..."
-                          className="resize-none rows-3"
-                          maxLength={300}
-                          {...field}
-                        />
-                      </FormControl>
-                      <div className="flex justify-between items-center text-xs text-muted-foreground">
-                        <FormMessage />
-                        <span>{field.value?.length || 0}/300</span>
-                      </div>
-                    </FormItem>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Description</label>
+                  <textarea
+                    placeholder="Brief description of the form's purpose..."
+                    rows={3}
+                    maxLength={300}
+                    {...form.register("description")}
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  />
+                  {form.formState.errors.description && (
+                    <p className="text-xs text-destructive mt-1">
+                      {form.formState.errors.description.message}
+                    </p>
                   )}
-                />
+                </div>
 
-                <DialogFooter className="pt-4">
-                  <Button
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <button
                     type="button"
-                    variant="outline"
                     onClick={() => setOpen(false)}
                     disabled={isPending}
+                    className="px-4 py-2 text-sm font-medium border border-border rounded-md hover:bg-accent"
                   >
                     Cancel
-                  </Button>
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      "Create Form"
-                    )}
-                  </Button>
-                </DialogFooter>
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 flex items-center gap-2"
+                  >
+                    {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {isPending ? "Creating..." : "Create Form"}
+                  </button>
+                </div>
               </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </div>
+            </div>
+          </div>
+        )}
 
-      {/* Main Table */}
-      <div className="rounded-md border bg-card shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[30%]">Title</TableHead>
-              <TableHead className="w-[45%]">Description</TableHead>
-              <TableHead className="w-[15%]">Created At</TableHead>
-              <TableHead className="w-[10%] text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="h-5 w-3/4" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-5/6" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-24" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-8 w-8 ml-auto rounded-md" />
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : error ? (
-              <TableRow>
-                <TableCell colSpan={4} className="h-32 text-center text-destructive">
-                  Failed to load forms. Please try refreshing the page.
-                </TableCell>
-              </TableRow>
-            ) : forms.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className="h-40 text-center">
-                  <div className="flex flex-col items-center justify-center text-muted-foreground">
-                    <FileText className="h-8 w-8 mb-2 stroke-1" />
-                    <p className="text-base font-medium">No forms yet.</p>
-                    <p className="text-xs mt-1">Click "Create Form" above to build your first form.</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              forms.map((formItem: any) => (
-                <TableRow key={formItem.id} className="hover:bg-muted/50 transition-colors">
-                  <TableCell className="font-medium text-foreground">
-                    <Link
-                      href={`/dashboard/forms/${formItem.id}`}
-                      className="hover:underline focus:outline-none"
-                    >
-                      {formItem.title}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground truncate max-w-xs">
-                    {formItem.description || "—"}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formItem.createdAt
-                      ? format(new Date(formItem.createdAt), "MMM d, yyyy")
-                      : "—"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      asChild
-                      title="Edit Form"
-                    >
-                      <Link href={`/dashboard/forms/${formItem.id}`}>
-                        <Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                        <span className="sr-only">Edit {formItem.title}</span>
+        {/* Table / List */}
+        <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
+          <table className="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-border bg-muted/40 text-muted-foreground">
+                <th className="p-4 font-semibold w-[30%]">Title</th>
+                <th className="p-4 font-semibold w-[45%]">Description</th>
+                <th className="p-4 font-semibold w-[15%]">Created At</th>
+                <th className="p-4 font-semibold w-[10%] text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-muted-foreground">
+                    Loading forms...
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-destructive">
+                    Failed to load forms.
+                  </td>
+                </tr>
+              ) : forms.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="p-12 text-center text-muted-foreground">
+                    <FileText className="mx-auto h-8 w-8 mb-2 opacity-50" />
+                    <p className="font-medium text-base">No forms yet</p>
+                    <p className="text-xs mt-1">Click "Create Form" above to get started.</p>
+                  </td>
+                </tr>
+              ) : (
+                forms.map((formItem: any) => (
+                  <tr key={formItem.id} className="hover:bg-muted/30 transition-colors">
+                    <td className="p-4 font-medium">
+                      <Link
+                        href={`/dashboard/forms/${formItem.id}`}
+                        className="hover:underline text-primary"
+                      >
+                        {formItem.title}
                       </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                    </td>
+                    <td className="p-4 text-muted-foreground truncate max-w-xs">
+                      {formItem.description || "—"}
+                    </td>
+                    <td className="p-4 text-muted-foreground text-xs">
+                      {formItem.createdAt
+                        ? format(new Date(formItem.createdAt), "MMM d, yyyy")
+                        : "—"}
+                    </td>
+                    <td className="p-4 text-right">
+                      <Link
+                        href={`/dashboard/forms/${formItem.id}`}
+                        className="p-2 inline-flex items-center justify-center rounded-md hover:bg-accent text-muted-foreground hover:text-foreground"
+                        title="Edit Form"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </main>
     </div>
   );
 }

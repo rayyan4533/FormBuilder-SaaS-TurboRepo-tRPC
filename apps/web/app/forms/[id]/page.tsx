@@ -3,14 +3,6 @@
 import { use, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
-
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
-import { Skeleton } from "~/components/ui/skeleton";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { Label } from "~/components/ui/label";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "~/components/ui/card";
 import { trpc } from "~/trpc/client";
 import { useGetForm } from "~/hooks/api/form";
 
@@ -59,17 +51,9 @@ export default function PublicFormPage({ params }: PublicFormPageProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-muted/20 py-12 px-4 flex justify-center items-center">
-        <Card className="w-full max-w-xl">
-          <CardHeader>
-            <Skeleton className="h-8 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-full" />
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-          </CardContent>
-        </Card>
+        <div className="w-full max-w-xl p-8 rounded-xl border border-border bg-card shadow-sm text-center text-muted-foreground">
+          Loading form...
+        </div>
       </div>
     );
   }
@@ -77,13 +61,13 @@ export default function PublicFormPage({ params }: PublicFormPageProps) {
   if (error || !form) {
     return (
       <div className="min-h-screen bg-muted/20 py-12 px-4 flex justify-center items-center">
-        <Card className="w-full max-w-md text-center p-6">
-          <AlertCircle className="mx-auto h-12 w-12 text-destructive mb-3" />
-          <h2 className="text-xl font-bold text-foreground">Form Not Found</h2>
-          <p className="text-sm text-muted-foreground mt-2">
+        <div className="w-full max-w-md text-center p-8 rounded-xl border border-border bg-card shadow-sm space-y-3">
+          <AlertCircle className="mx-auto h-10 w-10 text-destructive" />
+          <h2 className="text-xl font-bold">Form Not Found</h2>
+          <p className="text-sm text-muted-foreground">
             This form is unavailable or may have been deleted.
           </p>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -91,22 +75,19 @@ export default function PublicFormPage({ params }: PublicFormPageProps) {
   if (submitted) {
     return (
       <div className="min-h-screen bg-muted/20 py-12 px-4 flex justify-center items-center">
-        <Card className="w-full max-w-md text-center p-8">
-          <CheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4" />
-          <h2 className="text-2xl font-bold text-foreground">Response Submitted!</h2>
-          <p className="text-sm text-muted-foreground mt-2">
+        <div className="w-full max-w-md text-center p-8 rounded-xl border border-border bg-card shadow-sm space-y-4">
+          <CheckCircle className="mx-auto h-12 w-12 text-emerald-500" />
+          <h2 className="text-2xl font-bold">Response Submitted!</h2>
+          <p className="text-sm text-muted-foreground">
             Thank you for filling out <strong>{form.title}</strong>. Your response has been recorded.
           </p>
-          <Button
-            className="mt-6"
-            variant="outline"
-            onClick={() => {
-              setSubmitted(false);
-            }}
+          <button
+            className="mt-4 px-4 py-2 text-sm font-medium border border-border rounded-md hover:bg-accent transition-colors"
+            onClick={() => setSubmitted(false)}
           >
             Submit Another Response
-          </Button>
-        </Card>
+          </button>
+        </div>
       </div>
     );
   }
@@ -115,18 +96,18 @@ export default function PublicFormPage({ params }: PublicFormPageProps) {
 
   return (
     <div className="min-h-screen bg-muted/20 py-12 px-4 flex justify-center items-center">
-      <Card className="w-full max-w-2xl shadow-lg border">
-        <CardHeader className="border-b bg-card">
-          <CardTitle className="text-2xl font-bold">{form.title}</CardTitle>
+      <div className="w-full max-w-2xl bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+        <div className="p-6 border-b border-border bg-card space-y-1">
+          <h1 className="text-2xl font-bold">{form.title}</h1>
           {form.description && (
-            <CardDescription className="text-sm pt-1 whitespace-pre-wrap">
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap pt-1">
               {form.description}
-            </CardDescription>
+            </p>
           )}
-        </CardHeader>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-6 pt-6">
+          <div className="p-6 space-y-6">
             {submitError && (
               <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
                 <AlertCircle className="h-4 w-4 shrink-0" />
@@ -140,58 +121,70 @@ export default function PublicFormPage({ params }: PublicFormPageProps) {
               </p>
             ) : (
               fields.map((field: any) => (
-                <div key={field.id} className="space-y-2">
-                  <Label htmlFor={field.id} className="text-sm font-medium flex items-center gap-1">
-                    <span>{field.label}</span>
-                    {field.isRequired && <span className="text-destructive font-bold">*</span>}
-                  </Label>
+                <div key={field.id} className="space-y-1.5">
+                  <label htmlFor={field.id} className="block text-sm font-medium">
+                    {field.label}
+                    {field.isRequired && <span className="text-destructive ml-1 font-bold">*</span>}
+                  </label>
 
                   {field.description && (
-                    <p className="text-xs text-muted-foreground">{field.description}</p>
+                    <p className="text-xs text-muted-foreground mb-1">{field.description}</p>
                   )}
 
                   {field.type === "YES_NO" ? (
-                    <RadioGroup
-                      onValueChange={(val) => setValue(field.id, val)}
-                      value={watch(field.id) || ""}
-                      className="flex items-center space-x-6 pt-1"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Yes" id={`${field.id}-yes`} />
-                        <Label htmlFor={`${field.id}-yes`} className="cursor-pointer">Yes</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="No" id={`${field.id}-no`} />
-                        <Label htmlFor={`${field.id}-no`} className="cursor-pointer">No</Label>
-                      </div>
-                    </RadioGroup>
+                    <div className="flex items-center space-x-6 pt-1">
+                      <label className="flex items-center space-x-2 text-sm cursor-pointer">
+                        <input
+                          type="radio"
+                          value="Yes"
+                          checked={watch(field.id) === "Yes"}
+                          onChange={() => setValue(field.id, "Yes")}
+                          className="h-4 w-4 text-primary focus:ring-ring"
+                        />
+                        <span>Yes</span>
+                      </label>
+                      <label className="flex items-center space-x-2 text-sm cursor-pointer">
+                        <input
+                          type="radio"
+                          value="No"
+                          checked={watch(field.id) === "No"}
+                          onChange={() => setValue(field.id, "No")}
+                          className="h-4 w-4 text-primary focus:ring-ring"
+                        />
+                        <span>No</span>
+                      </label>
+                    </div>
                   ) : field.type === "NUMBER" ? (
-                    <Input
+                    <input
                       id={field.id}
                       type="number"
                       placeholder={field.placeholder || ""}
                       {...register(field.id, { required: field.isRequired })}
+                      className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   ) : field.type === "EMAIL" ? (
-                    <Input
+                    <input
                       id={field.id}
                       type="email"
                       placeholder={field.placeholder || "email@example.com"}
                       {...register(field.id, { required: field.isRequired })}
+                      className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   ) : field.type === "PASSWORD" ? (
-                    <Input
+                    <input
                       id={field.id}
                       type="password"
                       placeholder={field.placeholder || ""}
                       {...register(field.id, { required: field.isRequired })}
+                      className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   ) : (
-                    <Input
+                    <input
                       id={field.id}
                       type="text"
                       placeholder={field.placeholder || ""}
                       {...register(field.id, { required: field.isRequired })}
+                      className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   )}
 
@@ -201,24 +194,22 @@ export default function PublicFormPage({ params }: PublicFormPageProps) {
                 </div>
               ))
             )}
-          </CardContent>
+          </div>
 
           {fields.length > 0 && (
-            <CardFooter className="border-t bg-muted/10 justify-end pt-4">
-              <Button type="submit" disabled={submitMutation.isPending}>
-                {submitMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  "Submit Form"
-                )}
-              </Button>
-            </CardFooter>
+            <div className="p-4 border-t border-border bg-muted/20 flex justify-end">
+              <button
+                type="submit"
+                disabled={submitMutation.isPending}
+                className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 flex items-center gap-2"
+              >
+                {submitMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {submitMutation.isPending ? "Submitting..." : "Submit Form"}
+              </button>
+            </div>
           )}
         </form>
-      </Card>
+      </div>
     </div>
   );
 }
