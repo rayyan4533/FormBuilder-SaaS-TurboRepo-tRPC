@@ -54,34 +54,24 @@ export default function FormsDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Simple Header */}
-      <header className="border-b border-border bg-card px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard"
-            className="p-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground"
-            title="Back to Dashboard"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold">Forms</h1>
-            <p className="text-xs text-muted-foreground">Manage and build your forms</p>
-          </div>
+    <div className="p-6 md:p-8 space-y-6 max-w-6xl mx-auto">
+      {/* Section Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Forms</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage, edit, and create your custom forms
+          </p>
         </div>
 
         <button
           onClick={() => setOpen(true)}
-          className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+          className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-sm self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           Create Form
         </button>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-6 space-y-6">
+      </div>
         {/* Create Form Modal Dialog */}
         {open && (
           <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
@@ -227,7 +217,7 @@ export default function FormsDashboardPage() {
             </tbody>
           </table>
         </div>
-      </main>
     </div>
   );
 }
+

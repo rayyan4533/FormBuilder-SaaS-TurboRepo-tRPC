@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { userService } from "../../services";
 import { authenticatedProcedure, publicProcedure, router } from "../../trpc";
 import { getAuthenticationCookie, setAuthenticationCookie } from "../../utils/cookie";
@@ -66,14 +67,16 @@ export const authRouter = router({
     .input(getLoggedInUserInfoInputModel)
     .output(getLoggedInUserInfoOutputModel)
     .query(async ({ ctx }) => {
-
-      const { id, email, fullName, profileImageUrl } = await userService.getUserInfoById(ctx.user.id)
-
-      return {
-        id,
-        email,
-        fullName,
-        profileImageUrl
+      try {
+        const { id, email, fullName, profileImageUrl } = await userService.getUserInfoById(ctx.user.id)
+        return {
+          id,
+          email,
+          fullName,
+          profileImageUrl
+        }
+      } catch (err) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "User not found" })
       }
     })
 });

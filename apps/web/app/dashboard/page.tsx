@@ -25,42 +25,23 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col bg-background min-h-screen text-foreground">
-      {/* Simple Header */}
-      <header className="flex justify-between items-center bg-card px-6 py-4 border-border border-b">
-        <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2 font-bold text-primary text-xl">
-            <Layers className="w-6 h-6" />
-            FormBuilder
-          </Link>
-          <nav className="flex items-center gap-4 font-medium text-muted-foreground text-sm">
-            <Link href="/dashboard" className="font-semibold text-foreground">
-              Overview
-            </Link>
-            <Link href="/dashboard/forms" className="hover:text-foreground transition-colors">
-              Forms
-            </Link>
-          </nav>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/forms"
-            className="flex items-center gap-2 bg-primary hover:bg-primary/90 px-4 py-2 rounded-md font-medium text-primary-foreground text-sm transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Manage Forms
-          </Link>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 space-y-8 mx-auto p-6 w-full max-w-6xl">
+    <div className="p-6 md:p-8 space-y-8 max-w-6xl mx-auto">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="font-bold text-3xl tracking-tight">Dashboard Overview</h1>
+          <h1 className="font-bold text-2xl md:text-3xl tracking-tight">Dashboard Overview</h1>
           <p className="mt-1 text-muted-foreground text-sm">
-            Welcome to your FormBuilder dashboard.
+            Welcome back! Here is an overview of your forms and activity.
           </p>
         </div>
+        <Link
+          href="/dashboard/forms"
+          className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4" />
+          Create Form
+        </Link>
+      </div>
 
         {/* Simple Cards */}
         <div className="gap-6 grid grid-cols-1 sm:grid-cols-3">
@@ -151,7 +132,8 @@ export default function Page() {
             </div>
           )}
         </div>
-      </main>
     </div>
   );
 }
+
+
