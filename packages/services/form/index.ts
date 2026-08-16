@@ -1,8 +1,28 @@
 import db, { eq, asc, formsTable, formFieldsTable } from "@repo/database";
 
-import { createFormInput, CreateFormInputType, getFormByIdInput, GetFormByIdInputType, listFormsByUserIdInput, listFormsByUserIdInputType } from "./model";
+import { createFormInput, CreateFormInputType, getFormByIdInput, GetFormByIdInputType, listFormsByUserIdInput, listFormsByUserIdInputType, updateFormInput, UpdateFormInputType } from "./model";
 
 class FormService {
+
+    public async updateForm(payload: UpdateFormInputType) {
+        const { formId, ...updates } = await updateFormInput.parseAsync(payload)
+
+        const patch: Partial<typeof formsTable.$inferInsert> = {}
+        if (updates.title !== undefined) patch.title = updates.title
+        if ('description' in updates) patch.description = updates.description ?? null
+
+        if (Object.keys(patch).length === 0) throw new Error(`No fields provided to update`)
+
+        const result = await db
+            .update(formsTable)
+            .set(patch)
+            .where(eq(formsTable.id, formId))
+            .returning({ id: formsTable.id })
+
+        if (!result || result.length === 0) throw new Error(`Form with ID ${formId} does not exist`)
+
+        return { id: result[0]!.id }
+    }
 
     public async createForm(payload: CreateFormInputType) {
         const { title, description, createdBy } = await createFormInput.parseAsync(payload)

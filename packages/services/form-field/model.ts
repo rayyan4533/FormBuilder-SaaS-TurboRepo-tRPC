@@ -20,6 +20,7 @@ export const updateFieldInput = z.object({
     description: z.string().optional().nullable().describe('Updated helper text'),
     placeholder: z.string().optional().nullable().describe('Updated placeholder text'),
     isRequired: z.boolean().optional().describe('Updated required flag'),
+    index: z.string().optional().describe('Updated fractional order index'),
 })
 
 export type UpdateFieldInputType = z.infer<typeof updateFieldInput>

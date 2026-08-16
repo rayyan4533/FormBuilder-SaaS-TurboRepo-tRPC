@@ -78,6 +78,7 @@ class FormFieldService {
         if ('description' in updates) patch.description = updates.description ?? null
         if ('placeholder' in updates) patch.placeholder = updates.placeholder ?? null
         if (updates.isRequired !== undefined) patch.isRequired = updates.isRequired
+        if (updates.index !== undefined) patch.index = updates.index
 
         if (Object.keys(patch).length === 0) throw new Error(`No fields provided to update`)
 

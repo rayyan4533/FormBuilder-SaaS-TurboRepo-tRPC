@@ -9,6 +9,16 @@ export const createFormOutputModel = z.object({
     id: z.string().describe('ID of the created form'),
 })
 
+export const updateFormInputModel = z.object({
+    formId: z.string().uuid().describe('UUID of the form to update'),
+    title: z.string().max(55).optional(),
+    description: z.string().max(300).nullable().optional(),
+})
+
+export const updateFormOutputModel = z.object({
+    id: z.string(),
+})
+
 export const listFormsOutputModel = z.array(
     z.object({
         id: z.string().describe('ID of the form'),
@@ -55,6 +65,7 @@ export const updateFieldInputModel = z.object({
     description: z.string().nullable().optional(),
     placeholder: z.string().nullable().optional(),
     isRequired: z.boolean().optional(),
+    index: z.string().optional(),
 })
 
 export const updateFieldOutputModel = z.object({

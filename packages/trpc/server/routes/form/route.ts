@@ -3,7 +3,7 @@ import { authenticatedProcedure, publicProcedure, router } from "../../trpc";
 import { generatePath } from "../../utils/path-generator";
 import { formService, formFieldService, formSubmissionService } from "../../services";
 import {
-    createFormInputModel, createFormOutputModel, listFormsOutputModel,
+    createFormInputModel, createFormOutputModel, updateFormInputModel, updateFormOutputModel, listFormsOutputModel,
     createFieldInputModel, createFieldOutputModel,
     updateFieldInputModel, updateFieldOutputModel,
     deleteFieldInputModel, deleteFieldOutputModel,
@@ -17,6 +17,20 @@ const TAGS = ["Form"];
 const getPath = generatePath("/form");
 
 export const formRouter = router({
+    updateForm: authenticatedProcedure.meta({
+        openapi: {
+            method: 'POST',
+            path: getPath('/updateForm'),
+            tags: TAGS,
+            protect: true,
+        }
+    })
+        .input(updateFormInputModel)
+        .output(updateFormOutputModel)
+        .mutation(async ({ input }) => {
+            return formService.updateForm(input)
+        }),
+
     createForm: authenticatedProcedure.meta({
         openapi: {
             method: 'POST',

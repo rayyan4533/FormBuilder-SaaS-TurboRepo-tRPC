@@ -22,3 +22,11 @@ export const getFormByIdInput = z.object({
 })
 
 export type GetFormByIdInputType = z.infer<typeof getFormByIdInput>
+
+export const updateFormInput = z.object({
+    formId: z.string().uuid().describe('UUID of the form to update'),
+    title: z.string().max(55).optional().describe('Updated title'),
+    description: z.string().max(300).optional().nullable().describe('Updated description'),
+})
+
+export type UpdateFormInputType = z.infer<typeof updateFormInput>

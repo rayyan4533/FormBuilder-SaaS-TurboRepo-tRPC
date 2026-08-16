@@ -19,6 +19,25 @@ export const useCreateForm = () => {
   };
 };
 
+export const useUpdateForm = () => {
+  const utils = trpc.useUtils();
+
+  const mutation = trpc.form.updateForm.useMutation({
+    onSuccess: async () => {
+      await utils.form.getForm.invalidate();
+      await utils.form.listForms.invalidate();
+    },
+  });
+
+  return {
+    updateFormAsync: mutation.mutateAsync,
+    updateForm: mutation.mutate,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
+  };
+};
+
 export const useListForms = () => {
   const query = trpc.form.listForms.useQuery();
 
