@@ -5,15 +5,21 @@ interface CreateTRPCHttpBatchClientClientOpts {
   enableStreaming?: boolean;
 }
 
+
 export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClientClientOpts) => {
-  const c = opts?.enableStreaming ? httpBatchStreamLink : httpLink;
-  return c({
-    url: env.NEXT_PUBLIC_API_URL ?? "/trpc",
+  const baseUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8000/trpc";
+  const url = baseUrl.endsWith("/trpc") ? baseUrl : `${baseUrl}/trpc`;
+  const linkFn = opts?.enableStreaming ? httpBatchStreamLink : httpLink;
+  return linkFn({
+    url,
     fetch(url, options) {
       return fetch(url, {
         ...options,
-        credentials: "include",
+        credentials: "include", // 👈 Automatically sends HTTP-Only authentication cookies!
       });
     },
   });
 };
+
+
+

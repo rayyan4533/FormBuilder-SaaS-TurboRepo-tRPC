@@ -17,13 +17,19 @@ const openApiDocument = generateOpenApiDocument(serverRouter, {
   baseUrl: env.BASE_URL.concat("/api"),
 });
 
-if (env.NODE_ENV !== "prod") {
-  app.use(
-    cors({
-      origin: "*",
-    }),
-  );
-}
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    return callback(null, origin);
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-trpc-source", "trpc-accept"],
+};
+
+app.use(cors(corsOptions));
+
+
 
 app.use(express.json());
 
@@ -35,13 +41,14 @@ app.get("/health", (req, res) => {
   return res.json({ message: "Streamyst server is healthy", healthy: true });
 });
 
-logger.debug(`openapi.json: ${env.BASE_URL}/openapi.json`);
+logger.info(`openapi.json: ${env.BASE_URL}/openapi.json`);
 app.get("/openapi.json", (req, res) => {
   return res.json(openApiDocument);
 });
 
-logger.debug(`docs: ${env.BASE_URL}/docs`);
+logger.info(`docs: ${env.BASE_URL}/docs`);
 app.use("/docs", apiReference({ url: "/openapi.json" }));
+
 
 app.use(
   "/api",
@@ -56,7 +63,11 @@ app.use(
   trpcExpress.createExpressMiddleware({
     router: serverRouter,
     createContext,
+    onError: ({ error, path }) => {
+      logger.error(`tRPC error on path ${path}: ${error.message}`, { error });
+    },
   }),
 );
+
 
 export default app;

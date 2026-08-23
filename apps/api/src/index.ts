@@ -10,7 +10,10 @@ async function init() {
     const PORT: number = env.PORT ? +env.PORT : 8000;
     server.listen(PORT, () => {
       logger.info(`http server is running on PORT ${PORT}`);
+      logger.info(`OpenAPI spec: http://localhost:${PORT}/openapi.json`);
+      logger.info(`OpenAPI docs: http://localhost:${PORT}/docs`);
     });
+
   } catch (err) {
     logger.error(`Error creating http server`, { err });
     process.exit(1);
