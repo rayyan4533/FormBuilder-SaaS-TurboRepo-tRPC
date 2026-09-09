@@ -8,7 +8,7 @@ export default async function Home() {
       <div>
         <h1 className="text-3xl">Rayyan Op</h1>
         <Link href="/dashboard" className="text-blue-600 underline">
-          Go see the dashboard
+          Go see the dashboard i am testing to see if u understand what happened
         </Link>
         <h2>Server Status: {status}</h2>
       </div>
