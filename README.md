@@ -1,135 +1,61 @@
-# Turborepo starter
+# 📝 FormBuilder SaaS
 
-This Turborepo starter is maintained by the Turborepo core team.
+> A modern, production-ready form creation and analytics platform built with end-to-end type safety, modular monorepo architecture, and high-performance rendering.
 
-## Using this example
+![Next.js](https://img.shields.io/badge/Next.js-14%2F15-black?style=flat-square&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=flat-square&logo=typescript)
+![Turborepo](https://img.shields.io/badge/Turborepo-Monorepo-ef4444?style=flat-square&logo=turborepo)
+![tRPC](https://img.shields.io/badge/tRPC-v10%2Fv11-2563eb?style=flat-square&logo=trpc)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=flat-square&logo=tailwind-css)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat-square&logo=prisma)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest
-```
+## ⚡ Overview
 
-## What's inside?
+**FormBuilder SaaS** provides a flexible drag-and-drop workspace for designing, deploying, and analyzing dynamic forms without writing code. Engineered as a Turborepo monorepo, the application shares validation schemas, UI components, and database models across isolated services, ensuring complete end-to-end type safety from the database to the client interface.
 
-This Turborepo includes the following packages/apps:
+---
 
-### Apps and Packages
+## ✨ Features
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- **Intuitive Visual Builder**: Drag-and-drop interface supporting text inputs, select dropdowns, multi-step layouts, checkboxes, and file uploads.
+- **End-to-End Type Safety**: Single-source-of-truth validation powered by **Zod** and **tRPC** eliminates API drift.
+- **Form Publishing & Sharing**: Instantly generate public-facing, responsive submission URLs for published forms.
+- **Real-Time Analytics**: Track views, total submissions, bounce rates, and field-level conversion rates.
+- **Modular Monorepo Structure**: Shared UI components, configuration presets, database clients, and API routers orchestrated with **Turborepo**.
+- **Data Export**: Export collected form entries to CSV and JSON formats for external processing.
+- **Responsive Layout**: Tailored for desktop workflows and mobile form respondents using Tailwind CSS and Radix UI primitives.
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+---
 
-### Utilities
+## 🛠 Tech Stack
 
-This Turborepo has some additional tools already setup for you:
+| Layer | Technologies |
+| :--- | :--- |
+| **Monorepo Engine** | [Turborepo](https://turbo.build/repo) |
+| **Framework** | [Next.js](https://nextjs.org/) (App Router / Pages) |
+| **API Layer** | [tRPC](https://trpc.io/) |
+| **Database & ORM** | PostgreSQL / MySQL via [Prisma ORM](https://www.prisma.io/) |
+| **Validation** | [Zod](https://zod.dev/) |
+| **State & Drag-and-Drop** | `@dnd-kit` / `react-hook-form` |
+| **Styling & UI** | Tailwind CSS, Radix UI, Lucide Icons |
+| **Package Manager** | `pnpm` (recommended) or `npm` |
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+---
 
-### Build
+## 📁 Repository Architecture
 
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+```text
+FormBuilder-SaaS-TurboRepo-tRPC/
+├── apps/
+│   └── web/                 # Primary Next.js application (builder, dashboard, viewer)
+├── packages/
+│   ├── api/                 # tRPC routers, context, and procedure definitions
+│   ├── db/                  # Prisma schema, client instance, and migrations
+│   ├── ui/                  # Shared, accessible design system components
+│   ├── eslint-config/       # Shared linting rules
+│   └── typescript-config/   # Shared tsconfig definitions
+├── turbo.json               # Pipeline build and caching rules
+└── package.json
